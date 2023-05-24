@@ -1,7 +1,7 @@
 package com.hsrg.config;
 
 
-import com.hsrg.exception.MyException;
+import com.hsrg.exception.MyFeignException;
 import feign.Response;
 
 import feign.Util;
@@ -28,7 +28,7 @@ public class FeignErrorDecoder implements ErrorDecoder {
       if (response.status() == HttpStatus.INTERNAL_SERVER_ERROR.value()){
         String body = Util.toString(response.body().asReader(StandardCharsets.UTF_8));
         JSONObject jsonObject = JSONObject.fromObject(body);
-        return new MyException(jsonObject.getString("msg"));
+        return new MyFeignException(jsonObject.getString("msg"));
       }
       return errorStatus(methodKey, response);
     }
