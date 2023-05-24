@@ -1,32 +1,39 @@
 package com.hsrg.config;
 
+
 import com.hsrg.exception.MyException;
 import feign.Response;
+
 import feign.Util;
 import feign.codec.ErrorDecoder;
-import net.sf.json.JSONException;
+import lombok.extern.slf4j.Slf4j;
+
 import net.sf.json.JSONObject;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 
-import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
+import static feign.FeignException.errorStatus;
+
+
+@Slf4j
 @Configuration
 public class FeignErrorDecoder implements ErrorDecoder {
 
   @Override
   public Exception decode(final String methodKey, final Response response) {
+    log.error("feign error, request url:{} status:{}", response.request().toString(), response.status());
     try {
-      String message = Util.toString(response.body().asReader());
-      try {
-        JSONObject jsonObject = JSONObject.fromObject(message);
-        // 包装成自己自定义的异常，这里建议根据自己的代码改
-        return new MyException(jsonObject.getString("msg"), jsonObject.getInt("code"));
-      } catch (JSONException e) {
-        e.printStackTrace();
+      if (response.status() == HttpStatus.INTERNAL_SERVER_ERROR.value()){
+        String body = Util.toString(response.body().asReader(StandardCharsets.UTF_8));
+        JSONObject jsonObject = JSONObject.fromObject(body);
+        return new MyException(jsonObject.getString("msg"),jsonObject.getInt("code"));
       }
-
-    } catch (IOException ignored) {
+      return errorStatus(methodKey, response);
     }
-    return decode(methodKey, response);
+    catch (Exception e){
+      return e;
+    }
   }
 }
