@@ -36,6 +36,12 @@
             <version>2.4</version>
             <classifier>jdk15</classifier>
         </dependency>
+        <!--        utils-->
+        <dependency>
+            <groupId>com.hsrg</groupId>
+            <artifactId>utils</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
 </project>
