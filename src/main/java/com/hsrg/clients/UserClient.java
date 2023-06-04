@@ -14,4 +14,7 @@ public interface UserClient {
 
     @PostMapping("/deleteOneUser")
     Result deleteOneUser(@RequestBody User user);
+
+    @PostMapping("/user/selectByUserId")
+    Result selectByUserId(@RequestBody User user);
 }
